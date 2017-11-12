@@ -15,6 +15,8 @@ class post extends Model
     {
     	return 'slug';
 
-    }   
+    } 
+
+    protected $fillable = ['title','subtitle','slug','body','image','publish'] ; 
 
 }

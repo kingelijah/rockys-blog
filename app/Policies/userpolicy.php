@@ -2,39 +2,40 @@
 
 namespace App\Policies;
 
+
 use App\model\admin\admin;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class postpolicy
+class userpolicy
 {
     use HandlesAuthorization;
 
-   
-    public function view(admin $user)
+    /**
+     * Determine whether the user can view the admin.
+     *
+     * @param  \App\User  $user
+     * @param  \App\admin  $admin
+     * @return mixed
+     */
+    public function view(User $user, admin $admin)
     {
-      return $this->getPermission($user,5);
+        //
     }
 
-    
     public function create(admin $user)
     {
-        return $this->getPermission($user,1);
+        return $this->getPermission($user,6);
     }
 
     public function update(admin $user)
     {
-       return $this->getPermission($user,2);
+       return $this->getPermission($user,8);
     }
 
     public function delete(admin $user)
     {
-       return $this->getPermission($user,3);
+       return $this->getPermission($user,7);
     } 
-
-    public function publish(admin $user)
-    {
-      
-    }
 
     protected function getPermission($user,$p_id)
     {

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\admin;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
-use App\model\user\category;
 use App\Repositories\CategoryRepository;
 
 class categorycontroller extends Controller
@@ -38,7 +38,10 @@ class categorycontroller extends Controller
      */
     public function create()
     {
+        if(Auth::user()->can('users.create')){
         return view('admin.category.create');
+        }
+        return redirect(route('admin.home'));
     }
 
     /**
@@ -51,14 +54,13 @@ class categorycontroller extends Controller
     {
         $this->validate($request, [
            'name' => 'required',
-           'slug' => 'required',
 
             ]);
 
         $category = [
 
         'name' => $request->input('name'),
-        'slug' => $request->input('slug')
+        'slug' => $request->input('name')
         ];
 
         $this->category->store($category);
@@ -85,8 +87,11 @@ class categorycontroller extends Controller
      */
     public function edit($id)
     {
+        if(Auth::user()->can('users.create')){
         $categorys = $this->category->getById($id);
        return view('admin.category.edit',compact('categorys'));
+        }
+        return redirect(route('admin.home'));
     }
 
     /**
@@ -100,14 +105,14 @@ class categorycontroller extends Controller
     {
         $this->validate($request, [
            'name' => 'required',
-           'slug' => 'required',
+          
 
             ]);
         
         $category = [
 
         'name' => $request->input('name'),
-        'slug' => $request->input('slug')
+        'slug' => $request->input('name')
         ];
 
         $this->category->update($category,$id);

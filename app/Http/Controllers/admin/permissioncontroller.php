@@ -3,25 +3,30 @@
 namespace App\Http\Controllers\admin;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
-use App\model\admin\permission;
+use App\Repositories\PermissionRepository;
 
 class permissioncontroller extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-     public function __construct()
+    
+    protected $permission;
+
+
+     public function __construct(PermissionRepository $permission)
     {
+        $this->permission = $permission;
+        
         $this->middleware('auth:admin');
     }
     
     public function index()
     {
-        $permissions = permission::all();
+        if(Auth::user()->can('users.create')){
+        $permissions = $this->permission->getall();
         return view('admin.permission.index',compact('permissions'));
+         }
+         return redirect(route('admin.home'));
     }
 
     /**
@@ -31,7 +36,10 @@ class permissioncontroller extends Controller
      */
     public function create()
     {
+        if(Auth::user()->can('users.create')){
         return view('admin.permission.create');
+         }
+         return redirect(route('admin.home'));
     }
 
     /**
@@ -47,10 +55,14 @@ class permissioncontroller extends Controller
             'for' => 'required|max:50',
             ]);
 
-        $permission = new permission;
-        $permission->name = $request->name;
-        $permission->for = $request->for;
-        $permission->save();
+        $permission = [
+
+        'name' => $request->input('name'),
+        'for' => $request->input('for')
+        ];
+
+        $this->permission->store($permission);
+        
         return redirect(route('permission.index'))->with('message','permission created successfully');
     }
 
@@ -73,8 +85,11 @@ class permissioncontroller extends Controller
      */
     public function edit($id)
     {
-        $permissions = permission::find($id);
+        if(Auth::user()->can('users.create')){
+        $permissions = $this->permission->getById($id);
         return view('admin.permission.edit',compact('permissions'));
+         }
+         return redirect(route('admin.home'));
     }
 
     /**
@@ -91,10 +106,13 @@ class permissioncontroller extends Controller
             'for' => 'required|max:50'
             ]);
 
-        $permission = permission::find($id);
-        $permission->name = $request->name;
-        $permission->for = $request->for;
-        $permission->save();
+        $permission = [
+
+        'name' => $request->input('name'),
+        'for' => $request->input('for')
+        ];
+
+        $this->permission->update($permission,$id);
         return redirect(route('permission.index'))->with('message','permission created successfully');
     }
 
@@ -106,8 +124,7 @@ class permissioncontroller extends Controller
      */
     public function destroy($id)
     {
-        $permissions = permission::find($id);
-        $permissions->delete();
+        $this->permission->delete($id);
         return redirect(route('permission.index'));
     }
 }

@@ -3,28 +3,38 @@
 namespace App\Http\Controllers\admin;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\model\admin\admin;
 use App\model\admin\role;
+use App\Repositories\UserRepository;
+use App\Repositories\RoleRepository;
 
 
 class usercontroller extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     
-     public function __construct()
+    protected $user;
+
+    protected $role;
+
+
+
+    
+     public function __construct(UserRepository $user, RoleRepository $role)
     {
+        $this->user = $user;
+        $this->role = $role;
         $this->middleware('auth:admin');
     }
 
     public function index()
     {
-        $users = admin::all();
+        if(Auth::user()->can('users.create')){
+        $users = $this->user->getall();
         return view('admin.user.index',compact('users'));
+         }
+         return redirect(route('admin.home'));
     }
 
 
@@ -36,8 +46,11 @@ class usercontroller extends Controller
     public function create()
 
     {
-        $roles = role::all();
+        if(Auth::user()->can('users.create')){
+        $roles = $this->role->getall();
         return view('admin.user.create', compact('roles'));
+        }
+         return redirect(route('admin.home'));
     }
 
     /**
@@ -87,9 +100,12 @@ class usercontroller extends Controller
      */
     public function edit($id)
     {
-        $users = admin::find($id);
-        $roles = role::all();
+        if(Auth::user()->can('users.create')){
+        $users = $this->user->getById($id);
+        $roles = $this->role->getall();
         return view('admin.user.edit', compact('roles','users'));
+        }
+         return redirect(route('admin.home'));
     }
 
     /**
@@ -126,8 +142,7 @@ class usercontroller extends Controller
      */
     public function destroy($id)
     {
-        $users = admin::find($id);
-        $users->delete();
+        $this->user->delete($id);
         return redirect(route('user.index'));
     }
 }

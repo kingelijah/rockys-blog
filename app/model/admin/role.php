@@ -15,4 +15,6 @@ class role extends Model
     {
        return $this->belongsToMany('App\model\admin\admin', 'admin_roles');
     }
+
+      
 }

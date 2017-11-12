@@ -1,13 +1,13 @@
 <?php
+
 namespace App\Repositories;
-use App\model\user\category;
-use App\model\user\post;
-class CategoryRepository
+use App\model\admin\role;
+class RoleRepository
 {
    
     public function getAll()
     {
-        return category::all();
+        return role::all();
     }
     /**
      * get projects in descending order.
@@ -20,27 +20,22 @@ class CategoryRepository
     }*/
     public function getById($id)
     {
-        return category::find($id);
+        return role::find($id);
     }
     
     public function store($request)
     {
-        return category::create($request);
+        return role::create($request);
     }
     
     public function update($request, $id)
     {
-        return category::find($id)
+        return role::find($id)
                         ->update($request);
     }
     
     public function delete($id)
     {
-        return category::destroy($id);
-    }
-
-    public function getPost($category)
-    {
-        return $category->posts($category); 
+        return role::destroy($id);
     }
 }

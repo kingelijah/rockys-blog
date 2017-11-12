@@ -10,4 +10,6 @@ class permission extends Model
     {
     	return $this->belongsToMany('App\model\admin\role', 'permission_role');
     }
+
+    protected $fillable = ['name','for'];
 }
